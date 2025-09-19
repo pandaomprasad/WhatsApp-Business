@@ -34,8 +34,8 @@ const items = [
     icon: Search,
   },
   {
-    title: "Settings",
-    url: "#",
+    title: "Dashboard",
+    url: "/dashboard",
     icon: Settings,
   },
 ]
