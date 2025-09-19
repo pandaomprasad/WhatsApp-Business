@@ -17,7 +17,7 @@ export async function PATCH(req, { params }) {
 
     let updatedItems = [...(order.items || [])];
 
-    // ✅ Merge, update, or remove items
+    // --- Merge, update, or remove items ---
     if (body.items && Array.isArray(body.items) && body.items.length > 0) {
       for (const newItem of body.items) {
         const existing = updatedItems.find((i) => i.foodId === newItem.foodId);
@@ -38,12 +38,16 @@ export async function PATCH(req, { params }) {
       }
     }
 
-    // ✅ Prepare update object
+    // --- Prepare update object ---
     const updateDoc = {};
     if (body.status) updateDoc.status = body.status;
     if (body.items && body.items.length > 0) updateDoc.items = updatedItems;
+    if (body.subtotal !== undefined) updateDoc.subtotal = body.subtotal;
+    if (body.gst !== undefined) updateDoc.gst = body.gst;
+    if (body.grandTotal !== undefined) updateDoc.grandTotal = body.grandTotal;
+    if (body.paymentMethod) updateDoc.paymentMethod = body.paymentMethod;
 
-    // If not paid, just update in orders
+    // --- If not paid, just update in orders ---
     if (body.status !== "paid") {
       if (Object.keys(updateDoc).length > 0) {
         await db.collection("orders").updateOne(
@@ -54,23 +58,26 @@ export async function PATCH(req, { params }) {
       return Response.json({ message: "Order updated successfully" });
     }
 
-    // ✅ If paid → Move to bills collection
+    // --- If paid → Move to bills collection ---
     const billDoc = {
       ...order,
       ...updateDoc,
+      status: "paid",
       paidAt: new Date(),
     };
 
     await db.collection("bills").insertOne(billDoc);
 
-    // ✅ Delete from orders
+    // --- Delete from orders ---
     await db.collection("orders").deleteOne({ _id: new ObjectId(params.id) });
 
-    // ✅ Free table
-    await db.collection("hoteladmin").updateOne(
-      { "tables.tableNumber": Number(order.tableNumber) },
-      { $set: { "tables.$.status": "available" } }
-    );
+    // --- Free table ---
+    if (order.tableNumber) {
+      await db.collection("hoteladmin").updateOne(
+        { "tables.tableNumber": Number(order.tableNumber) },
+        { $set: { "tables.$.status": "available" } }
+      );
+    }
 
     return Response.json({ message: "Order moved to bills successfully" });
   } catch (err) {

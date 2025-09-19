@@ -3,6 +3,7 @@ import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,6 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Button } from "./ui/button"
+import { logout } from "@/utils/logout"
 
 // Menu items.
 const items = [
@@ -38,6 +41,16 @@ const items = [
     url: "/dashboard",
     icon: Settings,
   },
+  {
+    title: "Login",
+    url: "/login",
+    icon: Settings,
+  },
+  {
+    title: "Register",
+    url: "/register",
+    icon: Settings,
+  },
 ]
 
 export function AppSidebar({ collapsed, setCollapsed }) {
@@ -61,6 +74,11 @@ export function AppSidebar({ collapsed, setCollapsed }) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <SidebarFooter>
+          <Button  onClick={logout}>
+            Log Out
+          </Button>
+        </SidebarFooter>
       </SidebarContent>
     </Sidebar>
   )
