@@ -1,0 +1,9 @@
+{
+  "tables": [
+    { "tableId": 1, "status": "free" },
+    { "tableId": 2, "status": "free" },
+    { "tableId": 3, "status": "free" },
+    { "tableId": 4, "status": "free" }
+  ],
+  "bills": []
+}
