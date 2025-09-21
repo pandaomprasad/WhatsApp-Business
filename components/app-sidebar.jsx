@@ -1,3 +1,6 @@
+"use client"
+
+import { usePathname } from "next/navigation"
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
 
 import {
@@ -54,6 +57,8 @@ const items = [
 ]
 
 export function AppSidebar({ collapsed, setCollapsed }) {
+  const pathname = usePathname()
+
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarContent>
@@ -61,23 +66,35 @@ export function AppSidebar({ collapsed, setCollapsed }) {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const isActive = pathname === item.url
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a
+                        href={item.url}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-muted"
+                        }`}
+                      >
+                        <item.icon
+                          className={`h-4 w-4 ${
+                            isActive ? "text-primary-foreground" : "text-muted-foreground"
+                          }`}
+                        />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarFooter>
-          <Button  onClick={logout}>
-            Log Out
-          </Button>
+          <Button onClick={logout}>Log Out</Button>
         </SidebarFooter>
       </SidebarContent>
     </Sidebar>
