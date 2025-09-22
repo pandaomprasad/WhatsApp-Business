@@ -1,9 +1,24 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import DataTable from "@/app/components/table/DataTable";
-
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+// import { HouseHeart } from "lucide-react";
+import { Rose } from "lucide-react";
 export default function CashierPageComponent() {
   const [admin, setAdmin] = useState(null);
   const [table, setTable] = useState("");
@@ -178,92 +193,109 @@ export default function CashierPageComponent() {
   return (
     <div className="grid grid-cols-3 gap-6 p-6">
       {/* Left side → Menu */}
-      <div className="col-span-2 space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Select Table</CardTitle>
+      <div className="col-span-2 space-y-2">
+        {/* ✅ Menu */}
+        <Card className="shadow-md rounded-2xl border">
+          <CardHeader className=" border-b">
+            <Button variant="outline" className="w-fit">
+              <Rose size={16} />
+              Add special
+            </Button>
+            {/* <Badge className="text-sm px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+              Chickn
+            </Badge> */}
           </CardHeader>
-          <CardContent>
-            <select
-              value={table}
-              onChange={(e) => setTable(e.target.value)}
-              className="w-full border rounded-md p-2"
-            >
-              <option value="">-- Select --</option>
-              {admin?.tables?.map((t) => (
-                <option
-                  key={t.tableNumber}
-                  value={t.tableNumber}
-                  disabled={t.status === "occupied"}
-                >
-                  Table {t.tableNumber} ({t.status})
-                </option>
-              ))}
-            </select>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Menu</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-2">
             <DataTable data={admin?.menu || []} columns={columns} />
           </CardContent>
         </Card>
       </div>
-
       {/* Right side → Order Preview */}
-      <div>
-        <Card className="h-[650px] flex flex-col">
-          <CardHeader>
-            <CardTitle>Order Preview</CardTitle>
-          </CardHeader>
-
-          <CardContent className="flex-1 overflow-y-auto space-y-4">
-            {/* ✅ Customer Info */}
+      <div className="flex justify-center">
+        <Card className="h-[635px] flex flex-col w-full max-w-md shadow-xl rounded-2xl border border-gray-200 p-0">
+          {/* Content */}
+          <CardContent className="flex-1 overflow-y-auto p-2 space-y-2">
+            {/* ✅ Table Selection */}
             <div className="space-y-2">
+              {!admin?.tables || admin.tables.length === 0 ? (
+                <p className="text-sm text-gray-500">No tables available.</p>
+              ) : (
+                <Select value={table} onValueChange={(val) => setTable(val)}>
+                  <SelectTrigger className="w-full h-11 rounded-lg border px-3">
+                    <SelectValue placeholder="-- Select a table --" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-lg shadow-lg">
+                    {admin.tables.map((t) => (
+                      <SelectItem
+                        key={t.tableNumber}
+                        value={t.tableNumber}
+                        disabled={t.status === "occupied"}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="font-medium">
+                            Table {t.tableNumber}
+                          </span>
+                          <Badge
+                            variant={
+                              t.status === "occupied"
+                                ? "destructive"
+                                : "secondary"
+                            }
+                            className="ml-2"
+                          >
+                            {t.status}
+                          </Badge>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Customer Info */}
+            <div className="space-y-3">
               <input
                 type="text"
                 placeholder="Customer Name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full border rounded-md p-2"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
               <input
                 type="text"
                 placeholder="WhatsApp Number (10 digits)"
                 value={customerPhone}
                 onChange={(e) => {
-                  // allow only digits
                   const val = e.target.value.replace(/\D/g, "");
                   setCustomerPhone(val.slice(0, 10));
                 }}
-                className="w-full border rounded-md p-2"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
 
+            {/* Items */}
             {groupedItems.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-red-500 italic self-center justify-self-center">
                 No items added yet.
               </p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {groupedItems.map((it, i) => (
                   <li
                     key={i}
-                    className="flex justify-between items-center border-b pb-1 text-sm"
+                    className="flex justify-between items-center p-2 bg-gray-50 rounded-lg text-sm"
                   >
                     <div className="flex items-center gap-2">
-                      <span>{it.name}</span>
+                      <span className="font-medium">{it.name}</span>
                       {it.quantity > 1 && (
-                        <span className="text-muted-foreground">
+                        <span className="text-gray-500 text-xs">
                           x {it.quantity}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span>₹{it.price * it.quantity}</span>
+                    <div className="font-semibold">
+                      ₹{it.price * it.quantity}
                     </div>
                   </li>
                 ))}
@@ -271,27 +303,30 @@ export default function CashierPageComponent() {
             )}
           </CardContent>
 
-          <div className="border-t p-4 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span>Subtotal</span>
-              <span>₹{subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>GST (5%)</span>
-              <span>₹{gst.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between font-semibold">
-              <span>Grand Total</span>
-              <span>₹{grandTotal.toFixed(2)}</span>
+          {/* Footer */}
+          <CardFooter className="flex flex-col gap-3 border-t bg-white sticky bottom-0 p-4 rounded-b-2xl">
+            <div className="w-full space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span className="font-medium">₹{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>GST (5%)</span>
+                <span className="font-medium">₹{gst.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-base font-bold text-blue-600">
+                <span>Grand Total</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
+              </div>
             </div>
 
             {lastBill && (
-              <p className="text-sm text-green-600 font-medium">
+              <p className="text-xs text-green-600 font-medium">
                 ✅ Last Bill: #{lastBill}
               </p>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full">
               <Button
                 variant="outline"
                 className="flex-1"
@@ -313,7 +348,7 @@ export default function CashierPageComponent() {
                 Place Order
               </Button>
             </div>
-          </div>
+          </CardFooter>
         </Card>
       </div>
     </div>

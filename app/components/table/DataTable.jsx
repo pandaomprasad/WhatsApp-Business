@@ -67,11 +67,10 @@ export default function DataTable({
     // veg / non-veg filter
     // veg / non-veg filter
     if (vegFilter) {
-  result = result.filter((item) =>
-    vegFilter === "Veg" ? item.veg === true : item.veg === false
-  );
-}
-
+      result = result.filter((item) =>
+        vegFilter === "Veg" ? item.veg === true : item.veg === false
+      );
+    }
 
     // search filter
     if (globalFilter.trim() !== "") {
@@ -109,7 +108,6 @@ export default function DataTable({
       bgColor: "bg-red-100",
       onClick: () => setVegFilter("Non-Veg"),
     },
-    { separator: true },
     {
       text: "All",
       textColor: "text-gray-700",
@@ -165,7 +163,7 @@ export default function DataTable({
         {/* Right-side controls */}
         <div className="flex items-center gap-3">
           {/* Veg / Non-Veg filter via dropdown */}
-          <IconDropdownMenu defaultLabel="Filter Food" items={vegMenu} />
+          <IconDropdownMenu defaultLabel="All" items={vegMenu} />
 
           {/* ✅ Dynamic Category filter buttons */}
           <Button
