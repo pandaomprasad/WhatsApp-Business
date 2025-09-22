@@ -25,6 +25,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const navigationLinks = [{ href: "#", label: "Overview", active: true }];
 
@@ -97,6 +98,7 @@ export default function SiteHeader() {
 
         {/* Right side */}
         <div className="flex items-center gap-4">
+          <SidebarTrigger/>
           <Badge
             variant="outline"
             className={`gap-1.5 transition-colors duration-300 ${

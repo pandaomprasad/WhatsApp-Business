@@ -32,8 +32,12 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.user.role);
 
-      // ✅ Redirect to dashboard
-      router.push("/dashboard");
+      // ✅ Redirect based on role
+      if (data.user.role === "cashier") {
+        router.push("/bills"); // 👈 Cashier goes to bills page
+      } else {
+        router.push("/dashboard"); // 👈 Default redirect
+      }
     } catch (err) {
       console.error("Login error:", err);
       setError("Something went wrong");

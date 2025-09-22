@@ -352,7 +352,14 @@ export default function Component() {
       <TabsContent value="tab-1">
         <Card className="shadow-md rounded-2xl w-lg">
           <CardHeader className="flex items-center justify-between">
-            <CardTitle>Table Status</CardTitle>
+            <CardTitle className={"flex items-center text-2xl font-bold"}>
+              <TableRowsSplit
+                className="-ms-0.5 me-1.5 opacity-60 text-green-500"
+                size={24}
+                aria-hidden="true"
+              />
+              Table Status
+            </CardTitle>
             <div className="flex items-center gap-3">
               <Badge className="px-2 text-sm">
                 Total Tables {admin?.totalTables || 0}
@@ -569,7 +576,19 @@ export default function Component() {
               <p className="text-sm text-gray-500">No menu items found.</p>
             )}
 
-            <Separator />
+            {/* <Separator /> */}
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge className="px-2 text-sm bg-blue-100 text-blue-700">
+                Total: {admin?.menu?.length || 0}
+              </Badge>
+              <Badge className="px-2 text-sm bg-green-100 text-green-700">
+                Active: {admin?.menu?.filter((item) => item.active).length || 0}
+              </Badge>
+              <Badge className="px-2 text-sm bg-red-100 text-red-700">
+                Inactive:{" "}
+                {admin?.menu?.filter((item) => !item.active).length || 0}
+              </Badge>
+            </div>
 
             {/* 🚀 Removed inline Add Form, now handled in modal */}
             {/* Only Edit Modal remains */}

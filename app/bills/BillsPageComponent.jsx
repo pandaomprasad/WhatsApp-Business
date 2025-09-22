@@ -27,7 +27,7 @@ function formatDateTime(dateStr) {
 export default function BillsPageComponent() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [paymentSelection, setPaymentSelection] = useState({}); // track selected payment per order
+  const [paymentSelection, setPaymentSelection] = useState({});
 
   async function refreshOrders() {
     try {
@@ -66,16 +66,32 @@ export default function BillsPageComponent() {
   }
 
   return (
-    <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {orders.length === 0 && <p>No orders yet.</p>}
+    <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {orders.length === 0 && (
+        <p className="col-span-full text-center text-gray-500">No orders yet.</p>
+      )}
 
       {orders.map((order) => (
-        <Card key={order._id} className="shadow-md">
-          <CardHeader className="flex flex-row justify-between items-center">
-            <div className="flex flex-col">
-              <CardTitle className={"text-xs"}>Order #{order.billNo || "N/A"}</CardTitle>
-              <CardTitle className={"text-xl"}>{order.customerName}</CardTitle>
+        <Card
+          key={order._id}
+          className={`shadow-lg rounded-2xl border
+       
+           transition hover:shadow-xl`}
+        >
+          {/* Header */}
+          <CardHeader className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-sm text-gray-500">
+                Order #{order.billNo || "N/A"}
+              </CardTitle>
+              <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                {order.customerName}
+              </CardTitle>
+              <p className="text-xs text-gray-400 mt-1">
+                Table {order.tableNumber} | {formatDateTime(order.createdAt)}
+              </p>
             </div>
+
             <Badge
               variant={order.status === "paid" ? "success" : "destructive"}
               className="capitalize"
@@ -84,56 +100,65 @@ export default function BillsPageComponent() {
             </Badge>
           </CardHeader>
 
-          <CardContent>
-            <p className="font-semibold mb-1">Table {order.tableNumber}</p>
-            <p className="text-xs text-muted-foreground mb-3">
-              {formatDateTime(order.createdAt)}
-            </p>
-
-            <ul className="space-y-1 mb-3">
+          {/* Items */}
+          <CardContent className="mt-2">
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700 max-h-48 overflow-y-auto">
               {order.items.map((item, i) => (
-                <li key={`${item._id || i}`} className="flex justify-between text-sm">
+                <li key={`${item._id || i}`} className="flex justify-between py-2 text-sm text-gray-700 dark:text-gray-300">
                   <span>{item.name} × {item.quantity || 1}</span>
                   <span>₹{item.price * (item.quantity || 1)}</span>
                 </li>
               ))}
             </ul>
-            <Separator/>
-            <p className="mt-3 font-semibold flex justify-between">
-              <span>Total:</span>
-              <span className="text-green-500 font-bold">₹{calculateTotal(order.items)}</span>
-            </p>
+
+            <Separator className="my-2"/>
+
+            <div className="flex justify-between font-semibold text-gray-800 dark:text-gray-100">
+              <span>Total</span>
+              <span className="text-green-600 dark:text-green-400">
+                ₹{calculateTotal(order.items)}
+              </span>
+            </div>
 
             {order.status === "paid" && order.paymentMethod && (
-              <p className="text-sm text-muted-foreground mt-1">
-                Paid via: <span className="font-semibold">{order.paymentMethod}</span>
+              <p className="mt-1 text-xs text-gray-500">
+                Paid via <span className="font-semibold">{order.paymentMethod}</span>
               </p>
             )}
           </CardContent>
 
-          <CardFooter className="gap-3 flex flex-col">
-            {order.status !== "paid" && (
-              <>
-                <select
-                  value={paymentSelection[order._id] || ""}
-                  onChange={(e) =>
-                    setPaymentSelection((prev) => ({ ...prev, [order._id]: e.target.value }))
-                  }
-                  className="border rounded p-1"
-                >
-                  <option value="">Select Payment Method</option>
-                  <option value="Cash">Cash</option>
-                  <option value="UPI">UPI</option>
-                  <option value="Card">Card</option>
-                </select>
+          {/* Footer actions */}
+          {order.status !== "paid" && (
+            <CardFooter className="flex flex-col gap-2 mt-2">
+              <select
+                value={paymentSelection[order._id] || ""}
+                onChange={(e) =>
+                  setPaymentSelection((prev) => ({ ...prev, [order._id]: e.target.value }))
+                }
+                className="border rounded-lg p-2 text-sm w-full"
+              >
+                <option value="">Select Payment Method</option>
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Card">Card</option>
+              </select>
 
-                <div className="flex gap-2">
-                  <Button onClick={() => markAsPaid(order)}>Mark as Paid</Button>
-                  <Button onClick={() => setSelectedOrder(order)}>View More</Button>
-                </div>
-              </>
-            )}
-          </CardFooter>
+              <div className="flex gap-2 justify-end">
+                <Button
+                  className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+                  onClick={() => markAsPaid(order)}
+                >
+                  Mark as Paid
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedOrder(order)}
+                >
+                  View More
+                </Button>
+              </div>
+            </CardFooter>
+          )}
         </Card>
       ))}
 

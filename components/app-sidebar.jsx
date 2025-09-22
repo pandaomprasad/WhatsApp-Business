@@ -44,16 +44,16 @@ const items = [
     url: "/dashboard",
     icon: Settings,
   },
-  {
-    title: "Login",
-    url: "/login",
-    icon: Settings,
-  },
-  {
-    title: "Register",
-    url: "/register",
-    icon: Settings,
-  },
+  // {
+  //   title: "Login",
+  //   url: "/login",
+  //   icon: Settings,
+  // },
+  // {
+  //   title: "Register",
+  //   url: "/register",
+  //   icon: Settings,
+  // },
 ]
 
 export function AppSidebar({ collapsed, setCollapsed }) {
